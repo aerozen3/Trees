@@ -37,7 +37,7 @@ public class TreeMain {
     public static void printSums(IntNode root, int sum) {
         ArrayList<IntNode> path = Lists.newArrayList();
         Set<List<IntNode>> paths = Sets.newHashSet();
-        getSum(root, sum, path, paths);
+        getSum(sum, 0, root, path, paths);
         printPath(paths);
     }
 
@@ -49,20 +49,30 @@ public class TreeMain {
             System.out.println();
         }
     }
-    private static void getSum(IntNode root, int sum, List<IntNode> path, Set<List<IntNode>> paths) {
+    private static void getSum(int totalSum, int curVal, IntNode root, List<IntNode> path, Set<List<IntNode>> paths) {
         if (root == null) {
-            if (sum == 0) {
+            if (totalSum == curVal) {
                 paths.add(path);
+            } else {
+                int subSum = 0;
+                for (int i = path.size()-1; i >= 0; i--) {
+                    IntNode node = path.get(i);
+                    subSum += node.getValue();
+                    if (subSum == totalSum) {
+                        List<IntNode> newPath = path.subList(i, path.size());
+                        paths.add(newPath);
+//                        break;//keep if you only want shortest list
+                    }
+                }
             }
             return;
         }
 
-        int newSum = sum - root.getValue();
 //        System.out.println("Node:"+root.getValue()+" Sum:"+newSum);
         path.add(root);
         ArrayList<IntNode> pathCopy = Lists.newArrayList(path);
-        getSum(root.getLeftNode(), newSum, path, paths);
-        getSum(root.getRightNode(), newSum, pathCopy, paths);
+        getSum(totalSum, curVal, root.getLeftNode(), path, paths);
+        getSum(totalSum, curVal, root.getRightNode(), pathCopy, paths);
     }
 
 }
